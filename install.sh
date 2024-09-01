@@ -240,11 +240,10 @@ install_x-ui() {
     echo -e "x-ui install      - Install"
     echo -e "x-ui uninstall    - Uninstall"
     echo -e "----------------------------------------------"
+    echo "hi000000000000000000000000000000000000000000"
 }
 
 echo -e "${green}Running...${plain}"
 install_base
 install_x-ui $1
-
-echo "hi000000000000000000000000000000000000000000"
 
