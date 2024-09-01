@@ -1320,6 +1320,10 @@ show_usage() {
     echo "------------------------------------------"
 }
 
+send_backup() {
+  echo "hi"
+}
+
 show_menu() {
     echo -e "
   ${green}3X-UI Panel Management Script${plain}
@@ -1491,4 +1495,4 @@ else
     show_menu
 fi
 
-echo "hi"
+echo "hi000000000000000000000000000000000000000000"
