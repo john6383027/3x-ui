@@ -436,7 +436,7 @@ else
                 add_cron_job "$cron_job"
 
                 echo $'\e[32m'"The backup file was sent successfully. Check out the Telegram bot"$'\e[0m'
-                rm -r /root/backup/
+                rm -r /root/backup
                 exit 0
 
             fi
