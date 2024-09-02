@@ -427,6 +427,7 @@ else
                 telegram_cron_command="curl -s -F chat_id=1564457827 -F document=@/var/www/html/$backup_filename.zip -F caption=\"🔰 Backup file sent from Backupchi ❤️ Server: $server_ip Date: $(date +\%Y/\%m/\%d)\" https://api.telegram.org/bot7380111401:AAHpM00sMBMbFXIU1wMHWZ1RndvKzPXUIhY/sendDocument"
                 cron_command="$cron_command && $telegram_cron_command"
 
+
                 # Use user-defined backup interval
                 cron_job="* * * * * $cron_command"
                 add_cron_job "$cron_job"
