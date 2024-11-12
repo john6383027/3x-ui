@@ -331,20 +331,35 @@ else
     0)
       echo "Setting up a Iran server..."
 
-
-#!/bin/bash
-
       apt install curl -y
       apt install jq -y
 
-      # Set your Google API credentials
+      # Set the directory and file paths
+      BACKUP_DIR="/backup"
+      BACKUP_SCRIPT_PATH="$BACKUP_DIR/backup.sh"
+
+      # Check if the backup directory exists; if not, create it
+      if [ ! -d "$BACKUP_DIR" ]; then
+        mkdir "$BACKUP_DIR"
+        echo "Created directory $BACKUP_DIR."
+      fi
+
+      # Check if backup.sh already exists in the backup directory
+      if [ -f "$BACKUP_SCRIPT_PATH" ]; then
+        echo "Error: $BACKUP_SCRIPT_PATH already exists."
+        exit 1
+      fi
+
+      # Create the backup.sh file with Google Drive upload script content
+      cat << 'EOF' > "$BACKUP_SCRIPT_PATH"
+
       # Prompt the user for Google API credentials
       read -p "Enter Google API Client ID: " CLIENT_ID
       read -p "Enter Google API Client Secret: " CLIENT_SECRET
       read -p "Enter Google API Refresh Token: " REFRESH_TOKEN
 
       # Get the public IP address (or other identifier)
-      SERVER_IP=$(curl https://account98.com/tools/ip.php)
+      SERVER_IP=$(curl -s https://account98.com/tools/ip.php)
 
       # Set the file you want to upload and its original file path
       FILE_PATH="/etc/x-ui/x-ui.db"
@@ -362,7 +377,6 @@ else
           --data "client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET&refresh_token=$REFRESH_TOKEN&grant_type=refresh_token" \
           https://oauth2.googleapis.com/token | jq -r .access_token)
 
-
       # Check if access token is received
       if [ -z "$ACCESS_TOKEN" ]; then
         echo "Failed to obtain access token."
@@ -377,7 +391,17 @@ else
           "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
 
       echo "File uploaded successfully to Google Drive as $NEW_FILE_NAME."
-      ;;
+      EOF
+
+      # Make the backup.sh script executable
+      chmod +x "$BACKUP_SCRIPT_PATH"
+      echo "Created and made executable: $BACKUP_SCRIPT_PATH."
+
+      # Add a cron job to run backup.sh every hour with the full path
+      (crontab -l 2>/dev/null; echo "0 * * * * $BACKUP_SCRIPT_PATH") | crontab -
+      echo "Cron job set to run $BACKUP_SCRIPT_PATH every hour."
+
+    ;;
 
 
     1)
