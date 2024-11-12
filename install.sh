@@ -337,8 +337,8 @@ else
       apt install curl -y
       apt install jq -y
 
-# Set your Google API credentials
-# Prompt the user for Google API credentials
+      # Set your Google API credentials
+      # Prompt the user for Google API credentials
       read -p "Enter Google API Client ID: " CLIENT_ID
       read -p "Enter Google API Client Secret: " CLIENT_SECRET
       read -p "Enter Google API Refresh Token: " REFRESH_TOKEN
@@ -377,6 +377,7 @@ else
           "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
 
       echo "File uploaded successfully to Google Drive as $NEW_FILE_NAME."
+      ;;
 
     1)
         echo "Setting up a local server..."
