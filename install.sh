@@ -334,75 +334,79 @@ else
       apt install curl -y
       apt install jq -y
 
-      # Set the directory and file paths
-      BACKUP_DIR="/backup"
-      BACKUP_SCRIPT_PATH="$BACKUP_DIR/backup.sh"
 
-      # Check if the backup directory exists; if not, create it
-      if [ ! -d "$BACKUP_DIR" ]; then
-        mkdir "$BACKUP_DIR"
-        echo "Created directory $BACKUP_DIR."
-      fi
+    # Set the directory and file paths
+    BACKUP_DIR="/backup"
+    BACKUP_SCRIPT_PATH="$BACKUP_DIR/backup.sh"
 
-      # Check if backup.sh already exists in the backup directory
-      if [ -f "$BACKUP_SCRIPT_PATH" ]; then
-        echo "Error: $BACKUP_SCRIPT_PATH already exists."
-        exit 1
-      fi
+    # Check if the backup directory exists; if not, create it
+    if [ ! -d "$BACKUP_DIR" ]; then
+      mkdir "$BACKUP_DIR"
+      echo "Created directory $BACKUP_DIR."
+    fi
 
-      # Create the backup.sh file with Google Drive upload script content
-      cat << 'EOF' > "$BACKUP_SCRIPT_PATH"
+    # Check if backup.sh already exists in the backup directory
+    if [ -f "$BACKUP_SCRIPT_PATH" ]; then
+      echo "Error: $BACKUP_SCRIPT_PATH already exists."
+      exit 1
+    fi
 
-      # Prompt the user for Google API credentials
-      read -p "Enter Google API Client ID: " CLIENT_ID
-      read -p "Enter Google API Client Secret: " CLIENT_SECRET
-      read -p "Enter Google API Refresh Token: " REFRESH_TOKEN
+    # Prompt the user for Google API credentials
+    read -p "Enter Google API Client ID: " CLIENT_ID
+    read -p "Enter Google API Client Secret: " CLIENT_SECRET
+    read -p "Enter Google API Refresh Token: " REFRESH_TOKEN
 
-      # Get the public IP address (or other identifier)
-      SERVER_IP=$(curl -s https://account98.com/tools/ip.php)
+  # Create the backup.sh file with the Google Drive upload script content
+  cat <<-EOF > "$BACKUP_SCRIPT_PATH"
+	#!/bin/bash
 
-      # Set the file you want to upload and its original file path
-      FILE_PATH="/etc/x-ui/x-ui.db"
-      MIME_TYPE="application/x-sqlite3"  # Adjust MIME type if necessary
+	CLIENT_ID="$CLIENT_ID"
+	CLIENT_SECRET="$CLIENT_SECRET"
+	REFRESH_TOKEN="$REFRESH_TOKEN"
 
-      # Get the current date and time in the desired format
-      CURRENT_DATE=$(date "+%Y/%m/%d - %H:%M:%S")
+	# Get the public IP address (or other identifier)
+	SERVER_IP=\$(curl -s https://account98.com/tools/ip.php)
 
-      # Construct the new file name with IP, date, and time
-      NEW_FILE_NAME="${SERVER_IP} - ${CURRENT_DATE}.db"
+	# Set the file you want to upload and its original file path
+	FILE_PATH="/etc/x-ui/x-ui.db"
+	MIME_TYPE="application/x-sqlite3"  # Adjust MIME type if necessary
 
-      # Get a new access token using the refresh token
-      ACCESS_TOKEN=$(curl -s \
-          --request POST \
-          --data "client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET&refresh_token=$REFRESH_TOKEN&grant_type=refresh_token" \
-          https://oauth2.googleapis.com/token | jq -r .access_token)
+	# Get the current date and time in the desired format
+	CURRENT_DATE=\$(date "+%Y/%m/%d - %H:%M:%S")
 
-      # Check if access token is received
-      if [ -z "$ACCESS_TOKEN" ]; then
-        echo "Failed to obtain access token."
-        exit 1
-      fi
+	# Construct the new file name with IP, date, and time
+	NEW_FILE_NAME="\${SERVER_IP} - \${CURRENT_DATE}.db"
 
-      # Upload the file to Google Drive with the new name
-      curl -X POST \
-          -H "Authorization: Bearer $ACCESS_TOKEN" \
-          -F "metadata={name :'$NEW_FILE_NAME'};type=application/json;charset=UTF-8" \
-          -F "file=@$FILE_PATH;type=$MIME_TYPE" \
-          "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
+	# Get a new access token using the refresh token
+	ACCESS_TOKEN=\$(curl -s \\
+	    --request POST \\
+	    --data "client_id=\$CLIENT_ID&client_secret=\$CLIENT_SECRET&refresh_token=\$REFRESH_TOKEN&grant_type=refresh_token" \\
+	    https://oauth2.googleapis.com/token | jq -r .access_token)
 
-      echo "File uploaded successfully to Google Drive as $NEW_FILE_NAME."
-      EOF
+	# Check if access token is received
+	if [ -z "\$ACCESS_TOKEN" ]; then
+	  echo "Failed to obtain access token."
+	  exit 1
+	fi
 
-      # Make the backup.sh script executable
-      chmod +x "$BACKUP_SCRIPT_PATH"
-      echo "Created and made executable: $BACKUP_SCRIPT_PATH."
+	# Upload the file to Google Drive with the new name
+	curl -X POST \\
+	    -H "Authorization: Bearer \$ACCESS_TOKEN" \\
+	    -F "metadata={name :'\$NEW_FILE_NAME'};type=application/json;charset=UTF-8" \\
+	    -F "file=@\$FILE_PATH;type=\$MIME_TYPE" \\
+	    "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
 
-      # Add a cron job to run backup.sh every hour with the full path
-      (crontab -l 2>/dev/null; echo "0 * * * * $BACKUP_SCRIPT_PATH") | crontab -
-      echo "Cron job set to run $BACKUP_SCRIPT_PATH every hour."
+	echo "File uploaded successfully to Google Drive as \$NEW_FILE_NAME."
+EOF
 
-    ;;
+    # Make the backup.sh script executable
+    chmod +x "$BACKUP_SCRIPT_PATH"
+    echo "Created and made executable: $BACKUP_SCRIPT_PATH."
 
+    # Add a cron job to run backup.sh every hour with the full path
+    (crontab -l 2>/dev/null; echo "0 * * * * $BACKUP_SCRIPT_PATH") | crontab -
+    echo "Cron job set to run $BACKUP_SCRIPT_PATH every hour."
+      ;;
 
     1)
         echo "Setting up a local server..."
