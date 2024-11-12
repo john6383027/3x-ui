@@ -338,9 +338,10 @@ else
       apt install jq -y
 
 # Set your Google API credentials
-      CLIENT_ID="324143875327-n5j1qem1gijia8hr34u7cksj74a3r90c.apps.googleusercontent.com"
-      CLIENT_SECRET="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"
-      REFRESH_TOKEN="1//04hCAuIqCMZVLCgYIARAAGAQSNwF-L9IrZdRHzCzFGXyAlgxSKr1AxTXRGoyDdP55_QPYskr1BoL6ZdMJPqHYXfGij_9pgTUdMnw"
+# Prompt the user for Google API credentials
+      read -p "Enter Google API Client ID: " CLIENT_ID
+      read -p "Enter Google API Client Secret: " CLIENT_SECRET
+      read -p "Enter Google API Refresh Token: " REFRESH_TOKEN
 
       # Get the public IP address (or other identifier)
       SERVER_IP=$(curl https://account98.com/tools/ip.php)
